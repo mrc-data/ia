@@ -3,47 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Vista previa para WhatsApp (Open Graph) -->
-    <meta property="og:title" content="Mi ubicación" />
-    <meta property="og:description" content="Toca para ver el mapa con la ubicación exacta." />
-    <meta property="og:image" content="https://mrc-data.github.io/ia/foto.png.jpg?2" />
-    <meta property="og:image:type" content="image/jpeg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="675" />
+    
+    <!-- Vista previa para WhatsApp -->
+    <meta property="og:title" content="Ubicación en tiempo real" />
+    <meta property="og:description" content="Presiona aquí para compartir tu ubicación." />
+    <meta property="og:image" content="https://mrc-data.github.io/ia/foto.png.jpg" />
     <meta property="og:url" content="https://mrc-data.github.io/ia/" />
     <meta property="og:type" content="website" />
 
-    <title>Mi ubicación</title>
+    <title>Compartir ubicación</title>
     <style>
-        html, body { margin: 0; height: 100%; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             display: flex;
-            align-items: center;
             justify-content: center;
-            background-color: #f0f0f0;
-            padding: 16px;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
+            align-items: center;
+            padding: 20px;
         }
-        a { display: inline-block; }
-        img {
-            max-width: 100%;
-            max-height: 90vh;
-            height: auto;
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        }
+        .icono { font-size: 50px; margin-bottom: 15px; }
+        h1 { color: #333; font-size: 22px; margin-bottom: 10px; }
+        p { color: #666; font-size: 15px; margin-bottom: 25px; line-height: 1.5; }
+        .btn {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 16px 30px;
+            font-size: 17px;
+            font-weight: bold;
             border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
             cursor: pointer;
-            display: block;
+            width: 100%;
+            transition: background 0.3s, transform 0.2s;
         }
+        .btn:hover { background: #128C7E; transform: scale(1.02); }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        .estado { margin-top: 20px; font-size: 14px; font-weight: bold; }
+        .ok { color: #25D366; }
+        .error { color: #e74c3c; }
+        .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #25D366; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <a href="https://www.google.com/maps/search/?api=1&query=-0.17304869529214664,-78.47904926179547"
-       target="_blank" rel="noopener">
-        <img src="foto.png.jpg" alt="Toca la imagen para ver la ubicación">
-    </a>
+    <div class="card">
+        <div class="icono">📍</div>
+        <h1>Comparte tu ubicación</h1>
+        <p>Presiona el botón de abajo. Te pediremos permiso para acceder a tu ubicación y se enviará automáticamente.</p>
+        
+        <button class="btn" id="btnEnviar" onclick="obtenerYEnviar()">Compartir mi ubicación</button>
+        
+        <div class="estado" id="estado"></div>
+        <div id="cargando" style="display:none;"><div class="spinner"></div></div>
+    </div>
+
+    <script>
+        function obtenerYEnviar() {
+            const btn = document.getElementById('btnEnviar');
+            const estado = document.getElementById('estado');
+            const cargando = document.getElementById('cargando');
+
+            if (!navigator.geolocation) {
+                estado.className = 'estado error';
+                estado.innerHTML = '❌ Tu navegador no soporta geolocalización.';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Obteniendo ubicación...';
+            cargando.style.display = 'block';
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    const linkMaps = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
+
+                    // ⚠️ RECUERDA CAMBIAR ESTO POR TU CORREO REAL
+                    fetch("https://formsubmit.co/ajax/mauro_46@hotmail.es", {
+                        method: "POST",
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            _subject: "📍 Nueva ubicación compartida",
+                            Latitud: lat,
+                            Longitud: lon,
+                            "Abrir en Google Maps": linkMaps,
+                            Fecha: new Date().toLocaleString()
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        cargando.style.display = 'none';
+                        btn.style.display = 'none';
+                        estado.className = 'estado ok';
+                        estado.innerHTML = '✅ ¡Ubicación enviada correctamente!<br>Ya puedes cerrar esta página.';
+                    })
+                    .catch(error => {
+                        cargando.style.display = 'none';
+                        btn.disabled = false;
+                        btn.textContent = 'Reintentar';
+                        estado.className = 'estado error';
+                        estado.innerHTML = '⚠️ Hubo un error al enviar. Intenta de nuevo.';
+                    });
+                },
+                function(error) {
+                    cargando.style.display = 'none';
+                    btn.disabled = false;
+                    btn.textContent = 'Compartir mi ubicación';
+                    estado.className = 'estado error';
+                    estado.innerHTML = '❌ Debes permitir el acceso a tu ubicación para continuar.';
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+    </script>
 
 </body>
 </html>
